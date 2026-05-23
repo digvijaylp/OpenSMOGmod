@@ -63,8 +63,8 @@ from OpenSMOGmod import SBM
 
 2. After creating the SBM object, use loadSystemFiles() (from OpenSMOGmod) method instead of OpenSMOG loadSystem(). 
 ```python 
-sbm.loadSystemFiles(Grofile=grofile.gro,Topfile=topfile.top,\
-                   Xmlfile=xmlfile,xml,Modfile=modfile.xml)
+sbm.loadSystemFiles(Grofile="grofile.gro",Topfile="topfile.top",\
+                   Xmlfile="xmlfile.xml",Modfile="modfile.xml")
 ```
 **Note**: Please refer to sample input files and simulation python script in the [examples/](https://github.com/digvijaylp/OpenSMOGmod/examples) directory.
 ____
