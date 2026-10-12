@@ -145,12 +145,13 @@ class SBM(SBM):
             group_atoms = [x-1 for ndx_range in group_atoms for x in ndx_range]
             groupAtom_ndx[int(group['index'])-1] = group_atoms
         #groups are to be loaded in the order of their specified index
-        groupAtom_ndx = [groupAtom_ndx[x] for x in range(Ngroups)]
+        groupAtom_ndx = [groupAtom_ndx[x] for x in range(len(groupAtom_ndx))]
 
         # only calculate rep_x interactions with rep_x
         nbforcelist=[]
         for iteraction in data[0]:
             grp_i,grp_j = [int(iteraction[chr(k+ord('i'))])-1 for k in range(Ngroups)]
+            print (grp_i)
             grp_i,grp_j=groupAtom_ndx[grp_i],groupAtom_ndx[grp_j]       
             #check for pre-included NonBonded forces 
             for force in self.forcesDict:
