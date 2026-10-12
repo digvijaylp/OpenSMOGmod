@@ -1,10 +1,11 @@
-### OpenSMOGmod (v2.0)
+### OpenSMOGmod (v2.5_rc)
 
 **OpenSMOGmod** is a patch for [OpenSMOG](https://github.com/smog-server/OpenSMOG) designed to extend the functionality by adding:-
 * **Many-particle functions:** Support for custom potentials involving more than 2 atoms.
 * **COM Restraints:** Native support for Centre-of-Mass (COM) restraint potentials.
+* **Interaction Groups:** Native support for defining nonbond force interaction groups.
 
-**OpenSMOGmod (version 2.0)** is an **add-on** that uses class inheritance of OpenSMOG SBM class. This allows adding new features without modifying the original source code, thereby ensuring better compatibility with the ongoing development of the base OpenSMOG tool. 
+**OpenSMOGmod (version 2.0+)** is an **add-on** that uses class inheritance of OpenSMOG SBM class. This allows adding new features without modifying the original source code, thereby ensuring better compatibility with the ongoing development of the base OpenSMOG tool. 
 ____
 #### Installation instrunctions
 Since this is an add-on, ensure that OpenSMOG and OpenMM are installed first:
@@ -28,6 +29,10 @@ ____
 In addition to OpenSMOG input structure (.gro) and topology (.top & .xml) files, OpenSMOGmod requires an additional XML (.xml) file with "OpenSMOGmod" as the root tag. 
 ```XML
 <OpenSMOGmod>
+ <interaction_group>
+  ...
+  ...
+ </interaction_group>
  <manyparticle>
   ...
   ...
@@ -45,7 +50,10 @@ In addition to OpenSMOG input structure (.gro) and topology (.top & .xml) files,
  ...
  </contacts>
 <!-- Mod-lines starts -->
- <?OpenSMOGmod>
+ <?OpenSMOGmod
+  <interaction_group>
+   ...
+  </interaction_group>
   <manyparticle>
    ...
   </manyparticle>
@@ -53,7 +61,7 @@ In addition to OpenSMOG input structure (.gro) and topology (.top & .xml) files,
    ...
   </com_pull>
  ?> <!-- Mod-lines ends -->
-</OpenSMOGmod>
+</OpenSMOGforces>
 ```
 
 1. Instead of importing from the base OpenSMOG, import the SBM class from this module. 

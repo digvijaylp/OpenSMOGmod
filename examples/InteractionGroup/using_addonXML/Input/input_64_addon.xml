@@ -1,0 +1,132 @@
+<OpenSMOGmod>
+ <interaction_group>
+  <group index="1" name="rep_1" atoms="1:76:1"/>
+  <group index="2" name="rep_2" atoms="77:152:1"/>
+  <group index="3" name="rep_3" atoms="153:228:1"/>
+  <group index="4" name="rep_4" atoms="229:304:1"/>
+  <group index="5" name="rep_5" atoms="305:380:1"/>
+  <group index="6" name="rep_6" atoms="381:456:1"/>
+  <group index="7" name="rep_7" atoms="457:532:1"/>
+  <group index="8" name="rep_8" atoms="533:608:1"/>
+  <group index="9" name="rep_9" atoms="609:684:1"/>
+  <group index="10" name="rep_10" atoms="685:760:1"/>
+  <group index="11" name="rep_11" atoms="761:836:1"/>
+  <group index="12" name="rep_12" atoms="837:912:1"/>
+  <group index="13" name="rep_13" atoms="913:988:1"/>
+  <group index="14" name="rep_14" atoms="989:1064:1"/>
+  <group index="15" name="rep_15" atoms="1065:1140:1"/>
+  <group index="16" name="rep_16" atoms="1141:1216:1"/>
+  <group index="17" name="rep_17" atoms="1217:1292:1"/>
+  <group index="18" name="rep_18" atoms="1293:1368:1"/>
+  <group index="19" name="rep_19" atoms="1369:1444:1"/>
+  <group index="20" name="rep_20" atoms="1445:1520:1"/>
+  <group index="21" name="rep_21" atoms="1521:1596:1"/>
+  <group index="22" name="rep_22" atoms="1597:1672:1"/>
+  <group index="23" name="rep_23" atoms="1673:1748:1"/>
+  <group index="24" name="rep_24" atoms="1749:1824:1"/>
+  <group index="25" name="rep_25" atoms="1825:1900:1"/>
+  <group index="26" name="rep_26" atoms="1901:1976:1"/>
+  <group index="27" name="rep_27" atoms="1977:2052:1"/>
+  <group index="28" name="rep_28" atoms="2053:2128:1"/>
+  <group index="29" name="rep_29" atoms="2129:2204:1"/>
+  <group index="30" name="rep_30" atoms="2205:2280:1"/>
+  <group index="31" name="rep_31" atoms="2281:2356:1"/>
+  <group index="32" name="rep_32" atoms="2357:2432:1"/>
+  <group index="33" name="rep_33" atoms="2433:2508:1"/>
+  <group index="34" name="rep_34" atoms="2509:2584:1"/>
+  <group index="35" name="rep_35" atoms="2585:2660:1"/>
+  <group index="36" name="rep_36" atoms="2661:2736:1"/>
+  <group index="37" name="rep_37" atoms="2737:2812:1"/>
+  <group index="38" name="rep_38" atoms="2813:2888:1"/>
+  <group index="39" name="rep_39" atoms="2889:2964:1"/>
+  <group index="40" name="rep_40" atoms="2965:3040:1"/>
+  <group index="41" name="rep_41" atoms="3041:3116:1"/>
+  <group index="42" name="rep_42" atoms="3117:3192:1"/>
+  <group index="43" name="rep_43" atoms="3193:3268:1"/>
+  <group index="44" name="rep_44" atoms="3269:3344:1"/>
+  <group index="45" name="rep_45" atoms="3345:3420:1"/>
+  <group index="46" name="rep_46" atoms="3421:3496:1"/>
+  <group index="47" name="rep_47" atoms="3497:3572:1"/>
+  <group index="48" name="rep_48" atoms="3573:3648:1"/>
+  <group index="49" name="rep_49" atoms="3649:3724:1"/>
+  <group index="50" name="rep_50" atoms="3725:3800:1"/>
+  <group index="51" name="rep_51" atoms="3801:3876:1"/>
+  <group index="52" name="rep_52" atoms="3877:3952:1"/>
+  <group index="53" name="rep_53" atoms="3953:4028:1"/>
+  <group index="54" name="rep_54" atoms="4029:4104:1"/>
+  <group index="55" name="rep_55" atoms="4105:4180:1"/>
+  <group index="56" name="rep_56" atoms="4181:4256:1"/>
+  <group index="57" name="rep_57" atoms="4257:4332:1"/>
+  <group index="58" name="rep_58" atoms="4333:4408:1"/>
+  <group index="59" name="rep_59" atoms="4409:4484:1"/>
+  <group index="60" name="rep_60" atoms="4485:4560:1"/>
+  <group index="61" name="rep_61" atoms="4561:4636:1"/>
+  <group index="62" name="rep_62" atoms="4637:4712:1"/>
+  <group index="63" name="rep_63" atoms="4713:4788:1"/>
+  <group index="64" name="rep_64" atoms="4789:4864:1"/>
+  <interaction i="1" j="1"/>
+  <interaction i="2" j="2"/>
+  <interaction i="3" j="3"/>
+  <interaction i="4" j="4"/>
+  <interaction i="5" j="5"/>
+  <interaction i="6" j="6"/>
+  <interaction i="7" j="7"/>
+  <interaction i="8" j="8"/>
+  <interaction i="9" j="9"/>
+  <interaction i="10" j="10"/>
+  <interaction i="11" j="11"/>
+  <interaction i="12" j="12"/>
+  <interaction i="13" j="13"/>
+  <interaction i="14" j="14"/>
+  <interaction i="15" j="15"/>
+  <interaction i="16" j="16"/>
+  <interaction i="17" j="17"/>
+  <interaction i="18" j="18"/>
+  <interaction i="19" j="19"/>
+  <interaction i="20" j="20"/>
+  <interaction i="21" j="21"/>
+  <interaction i="22" j="22"/>
+  <interaction i="23" j="23"/>
+  <interaction i="24" j="24"/>
+  <interaction i="25" j="25"/>
+  <interaction i="26" j="26"/>
+  <interaction i="27" j="27"/>
+  <interaction i="28" j="28"/>
+  <interaction i="29" j="29"/>
+  <interaction i="30" j="30"/>
+  <interaction i="31" j="31"/>
+  <interaction i="32" j="32"/>
+  <interaction i="33" j="33"/>
+  <interaction i="34" j="34"/>
+  <interaction i="35" j="35"/>
+  <interaction i="36" j="36"/>
+  <interaction i="37" j="37"/>
+  <interaction i="38" j="38"/>
+  <interaction i="39" j="39"/>
+  <interaction i="40" j="40"/>
+  <interaction i="41" j="41"/>
+  <interaction i="42" j="42"/>
+  <interaction i="43" j="43"/>
+  <interaction i="44" j="44"/>
+  <interaction i="45" j="45"/>
+  <interaction i="46" j="46"/>
+  <interaction i="47" j="47"/>
+  <interaction i="48" j="48"/>
+  <interaction i="49" j="49"/>
+  <interaction i="50" j="50"/>
+  <interaction i="51" j="51"/>
+  <interaction i="52" j="52"/>
+  <interaction i="53" j="53"/>
+  <interaction i="54" j="54"/>
+  <interaction i="55" j="55"/>
+  <interaction i="56" j="56"/>
+  <interaction i="57" j="57"/>
+  <interaction i="58" j="58"/>
+  <interaction i="59" j="59"/>
+  <interaction i="60" j="60"/>
+  <interaction i="61" j="61"/>
+  <interaction i="62" j="62"/>
+  <interaction i="63" j="63"/>
+  <interaction i="64" j="64"/>
+</interaction_group>
+</OpenSMOGmod>
