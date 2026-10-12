@@ -9,11 +9,12 @@ from contextlib import redirect_stdout
 class SBM(SBM):
 
     initmsg=R"""
-    ##################### OpenSMOGmod (v2.0) ###########################
+    ##################### OpenSMOGmod (v2.5.0_rc) ###########################
 
         OpenSMOGmod: A patch for OpenSMOG adding support for:-
             1) Expressions with more than 2 or 4 atoms.
             2) Potential for Centre-of-Mass (COM) restrain.
+            3) Defining interaction groups. 
 
         The code is tested to be compatible with OpenSMOG v1.2 but
         should work with v1.1.1 and above. Please run checks/tests
@@ -29,7 +30,7 @@ class SBM(SBM):
     """
 
     print (initmsg)
-    list_of_potential_terms = ['manyparticle','com_pull']
+    list_of_potential_terms = ['manyparticle','com_pull','interaction_group']
     mod_forceApplied=False
 
     def _splitForces_COM_pull(self):
@@ -128,6 +129,43 @@ class SBM(SBM):
         contacts_ff.setForceGroup(self.forceCount)
         self.forceCount +=1
 
+    def _nonbondInteractionGroup(self):
+        #first add the atom groups
+        Ngroups=2
+        data=self.mod_data['interaction_group']
+
+        groupAtom_ndx = {}
+        for group in data[-1]: 
+            if int(group['index']) <= 0:
+                SBM.opensmog_quit('Group index must be a positive integer')
+            """atom index format atoms='b1:e1:i1,b2,e2,i2' will load atoms
+            in range b1 to e1 with interval i1 and from b2 to e2 with interval i2"""
+            group_atoms = [x.split(':')+['1'] for x in group['atoms'].split(',')]
+            group_atoms = [list(range(int(x[0]),int(x[1])+1,int(x[2]))) for x in group_atoms]            
+            group_atoms = [x-1 for ndx_range in group_atoms for x in ndx_range]
+            groupAtom_ndx[int(group['index'])-1] = group_atoms
+        #groups are to be loaded in the order of their specified index
+        groupAtom_ndx = [groupAtom_ndx[x] for x in range(Ngroups)]
+
+        # only calculate rep_x interactions with rep_x
+        nbforcelist=[]
+        for iteraction in data[0]:
+            grp_i,grp_j = [int(iteraction[chr(k+ord('i'))])-1 for k in range(Ngroups)]
+            grp_i,grp_j=groupAtom_ndx[grp_i],groupAtom_ndx[grp_j]       
+            #check for pre-included NonBonded forces 
+            for force in self.forcesDict:
+                if 'Nonbonded0' not in force:
+                    continue
+                if not hasattr(self.forcesDict[force],'addInteractionGroup'):
+                    continue
+                print('\tDefining interaction groups for {:} from OpenSMOGmd'.format(force))
+                self.forcesDict[force].addInteractionGroup(grp_i,grp_j) 
+                if force not in nbforcelist:
+                    nbforcelist.append(force)
+        if len(nbforcelist)==0:
+            SBM.opensmog_quit('Could not define interaction groups. No Nonbond forces found. Please chcek you OpenSMOG input .top and .xml files.')
+        return nbforcelist
+
 
     def import_mod2OpenSMOG(self,text_xml=None,file_xml=None):
         R"""
@@ -150,7 +188,7 @@ class SBM(SBM):
         modmissing=0
         for mp in self.list_of_potential_terms:
             if root.find(mp) is None: modmissing+=1
-        if modmissing==2:
+        if modmissing==len(self.list_of_potential_terms):
             SBM.opensmog_quit('No OpenSMOGmod potential term found. Please import SBM directly from OpenSMOG. OpenSMOGmod potential terms include: '+str(self.list_of_potential_terms))
             
 
@@ -228,9 +266,29 @@ class SBM(SBM):
             xml_data['manyparticle']=[Expression,Parameters,Party,Force_Names]
         else: print('No many particle potential found in xml file.')        
 
+        #Nonbonded interaction groups
+        AtomGroups = []
+        Party=[]
+        self.interaction_group_present=False
+        if root.find('interaction_group') != None:
+            self.interaction_group_present=True
+            interaction_group_xml=root.find('interaction_group')
+            for i in range(len(interaction_group_xml)):
+                #atom groups
+                for grp in interaction_group_xml[i].iter('group'):
+                    AtomGroups.append(grp.attrib)
+                # Ntuple
+                for grpparty in interaction_group_xml[i].iter('interaction'):
+                    Party.append(grpparty.attrib)
+            xml_data['interaction_group']=[Party,AtomGroups]
+        else: print('No interaction group defined in xml file.')
+
+
         self.mod_data=xml_data
         
         if not (self.mod_forceApplied):
+            if self.interaction_group_present==True:   
+                self._nonbondInteractionGroup()
             if self.manyparticle_present==True:
                 self._splitForces_manyparticle()
                 for force in self.manyparticle:

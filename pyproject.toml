@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OpenSMOGmod"
-version = "2.0.0"
+version = "2.5.0_rc"
 authors = [{ name="Digvijay L. Prakash"}]
 description = "A plugin for OpenSMOG  with support for additional potential energy terms."
 readme = "README.md"

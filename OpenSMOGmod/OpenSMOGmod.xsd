@@ -73,12 +73,26 @@
       <xs:element name="pull_type" type="pullpotType" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
+  <!-- Interaction Groups POTENTIAL TYPE -->
+  <xs:complexType name="interaction_groupType">
+    <xs:sequence>
+      <xs:element name="group" type="groupType" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="interaction" type="interactionType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- INTERACTION_GROUP TYPE
+  <xs:complexType name="interaction_groupType">
+    <xs:sequence>
+      <xs:element name="intergroup_type" type="intergrouppotType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>-->
   <!-- OpenSMOGmod TYPE -->
   <xs:complexType name="OpenSMOGmodType">
     <xs:all>
       <xs:element name="constants" type="constantsType" minOccurs="0" maxOccurs="1"/>
       <xs:element name="manyparticle" type="manyparticleType" minOccurs="0" maxOccurs="1"/>
       <xs:element name="com_pull" type="com_pullType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="interaction_group" type="interaction_groupType" minOccurs="0" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
   <!-- OpenSMOGmod SCHEMA -->
