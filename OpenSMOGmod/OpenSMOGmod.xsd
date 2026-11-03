@@ -58,7 +58,7 @@
   <xs:complexType name="colvarpotType">
     <xs:sequence>
       <xs:element name="expression" type="expressionType" minOccurs="1" maxOccurs="unbounded"/>
-      <!--xs:element name="parameter" type="parameterType" minOccurs="1" maxOccurs="unbounded"/-->
+      <xs:element name="parameter" type="parameterType" minOccurs="1" maxOccurs="unbounded"/>
       <!--xs:element name="target" type="novalType" maxOccurs="unbounded"/-->
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>

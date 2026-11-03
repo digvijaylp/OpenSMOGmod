@@ -181,8 +181,10 @@ class SBM(SBM):
         # Add Collective Variable (CV) force
         customExp = restraint[0]
         colvar_ff=CustomCVForce(customExp)
+        rest_pars={pars:[] for pars in restraint[1]}
         for name in CV:
-            colvar_ff.addCollectiveVariable(name,CV[name])
+            if name in rest_pars:
+                colvar_ff.addCollectiveVariable(name,CV[name])
         """
         CV_keys = list(CV.keys())
         CV_index = [i for i in range(len(CV_keys))]
