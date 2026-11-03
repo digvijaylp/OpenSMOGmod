@@ -1,5 +1,5 @@
 import os
-from openmm import CustomCompoundBondForce, CustomCentroidBondForce
+from openmm import CustomCompoundBondForce, CustomCentroidBondForce,CustomCVForce
 from OpenSMOG import SBM
 from lxml import etree
 from pathlib import Path
@@ -15,6 +15,7 @@ class SBM(SBM):
             1) Expressions with more than 2 or 4 atoms.
             2) Potential for Centre-of-Mass (COM) restrain.
             3) Defining interaction groups. 
+            4) Defining potential for collective variables.
 
         The code is tested to be compatible with OpenSMOG v1.2 but
         should work with v1.1.1 and above. Please run checks/tests
@@ -30,7 +31,7 @@ class SBM(SBM):
     """
 
     print (initmsg)
-    list_of_potential_terms = ['manyparticle','com_pull','interaction_group']
+    list_of_potential_terms = ['manyparticle','com_pull','interaction_group','colvar']
     mod_forceApplied=False
 
     def _splitForces_COM_pull(self):
@@ -51,6 +52,19 @@ class SBM(SBM):
             forces[cont_data[3][n]] = [cont_data[0][n], cont_data[1][n], cont_data[2][n]]
         self.manyparticle = forces
         
+    def _splitForces_colvar(self):
+        #collective variable force
+        cv_data,bias_data=self.mod_data['colvar']
+        n_forces=len(bias_data[3])
+        n_colvars=len(cv_data[3])
+        forces,colvar = {},{}
+        for n in range(n_forces):
+            forces[bias_data[3][n]] = [bias_data[0][n], bias_data[1][n], bias_data[2][n]]
+        for n in range(n_colvars):
+            colvar[cv_data[3][n]] = [cv_data[0][n], cv_data[1][n], cv_data[2][n]]
+        self.cvforce = forces
+        self.colvar = colvar
+
     def _customCOMForce(self, name, data):
         #first set the equation
         """ '|' is used as a delimiter between number of interacting
@@ -87,9 +101,9 @@ class SBM(SBM):
         #fourth, apply the bonds from each pair of atom groups and the related variables.
         pars = [pars for pars in data[1]]            
 
-        for iteraction in data[2]:
-            group_ = [int(iteraction[chr(k+ord('i'))])-1 for k in range(Ngroups)]
-            parameters = [float(iteraction[k]) for k in pars]
+        for interaction in data[2]:
+            group_ = [int(interaction[chr(k+ord('i'))])-1 for k in range(Ngroups)]
+            parameters = [float(interaction[k]) for k in pars]
             pull_ff.addBond(group_, parameters)
         self.forcesDict[name] =  pull_ff
         pull_ff.setForceGroup(self.forceCount)
@@ -116,9 +130,9 @@ class SBM(SBM):
         #third, apply the bonds from each pair of atoms and the related variables.
         pars = [pars for pars in data[1]]
 
-        for iteraction in data[2]:
-            atom_index_ = [int(iteraction[chr(k+ord('i'))])-1 for k in range(Nparticles)]
-            parameters = [float(iteraction[k]) for k in pars]
+        for interaction in data[2]:
+            atom_index_ = [int(interaction[chr(k+ord('i'))])-1 for k in range(Nparticles)]
+            parameters = [float(interaction[k]) for k in pars]
             contacts_ff.addBond(atom_index_, parameters)
 
         #forth, if the are global variables, add them to the force
@@ -127,6 +141,66 @@ class SBM(SBM):
                 contacts_ff.addGlobalParameter(const_key,self.data['constants'][const_key])
         self.forcesDict[name] =  contacts_ff
         contacts_ff.setForceGroup(self.forceCount)
+        self.forceCount +=1
+
+    def _customColVarForce(self, force_name, restraint, pbc):
+        #looping over collective variables 
+        CV={}
+        for name in self.colvar:
+            data=self.colvar[name]
+            #first set the equation
+            """ '|' is used as a delimiter between numbre of particles
+            and the expression for potential energy between them"""
+            if '|' in data[0]:        
+                data[0] = (data[0].split('|'))
+                Nparticles = int(data[0][0])
+                customExp = data[0][1]
+            else:
+                Nparticles = 2 #default
+                customExp = data[0]
+            CV[name] = CustomCompoundBondForce(Nparticles,customExp)
+            CV[name].setUsesPeriodicBoundaryConditions(pbc)
+
+            #second set the number of variable
+            for pars in data[1]:
+                CV[name].addPerBondParameter(pars)
+            
+            #third, apply the bonds from each pair of atoms and the related variables.
+            pars = [pars for pars in data[1]]
+
+            for interaction in data[2]:
+                atom_index_ = [int(interaction[chr(k+ord('i'))])-1 for k in range(Nparticles)]
+                parameters = [float(interaction[k]) for k in pars]
+                CV[name].addBond(atom_index_, parameters)
+
+            #forth, if the are global variables, add them to the force
+            if self.constants_present==True:
+                for const_key in self.data['constants']:
+                    CV[name].addGlobalParameter(const_key,self.data['constants'][const_key])
+
+        # Add Collective Variable (CV) force
+        customExp = restraint[0]
+        colvar_ff=CustomCVForce(customExp)
+        for name in CV:
+            colvar_ff.addCollectiveVariable(name,CV[name])
+        """
+        CV_keys = list(CV.keys())
+        CV_index = [i for i in range(len(CV_keys))]
+        colvar_ff.addGlobalParameter('index',0)
+        for i in range(len(CV_keys)):
+            name=CV_keys[i]
+            print (name)
+            colvar_ff.addCollectiveVariable(name,CV[name])
+        exit()
+        rest_pars={pars:[] for pars in restraint[1]}
+        for target in restraint[2]:
+            index = int(target[index])
+            name = target[name]
+            parameters = [float(target[k]) for k in pars]
+            print (index,name,parameter)           
+        """
+        self.forcesDict[force_name] =  colvar_ff
+        colvar_ff.setForceGroup(self.forceCount)
         self.forceCount +=1
 
     def _nonbondInteractionGroup(self):
@@ -149,8 +223,8 @@ class SBM(SBM):
 
         # only calculate rep_x interactions with rep_x
         nbforcelist=[]
-        for iteraction in data[0]:
-            grp_i,grp_j = [int(iteraction[chr(k+ord('i'))])-1 for k in range(Ngroups)]
+        for interaction in data[0]:
+            grp_i,grp_j = [int(interaction[chr(k+ord('i'))])-1 for k in range(Ngroups)]
             print (grp_i)
             grp_i,grp_j=groupAtom_ndx[grp_i],groupAtom_ndx[grp_j]       
             #check for pre-included NonBonded forces 
@@ -251,7 +325,7 @@ class SBM(SBM):
                     expr_string=expr.attrib['expr']
                     if 'num' in expr.attrib:
                         if '|' in expr_string:
-                            SBM.opensmog_quit('Expression for many particle potential cannot contain '|' if number of interacting particles is specified as an attribute.')  
+                            SBM.opensmog_quit('Expression for many particle potential cannot contain '|' if number of interacting particles if specified as an attribute.')  
                         expr_string='%s|%s'%(expr.attrib['num'],expr_string)
                     Expression.append(expr_string)
                 #internal parameters
@@ -284,6 +358,61 @@ class SBM(SBM):
             xml_data['interaction_group']=[Party,AtomGroups]
         else: print('No interaction group defined in xml file.')
 
+        ## custom collective variable force 
+        CV_Names=[]
+        Force_Names=[]
+        CV_Expression=[]
+        Expression=[]
+        CV_Parameters=[]
+        Parameters=[]
+        Party=[]
+        Values=[]
+        self.colvar_present=False
+        if root.find('colvar') != None:
+            self.colvar_present=True
+            colvar_xml=root.find('colvar')
+            for subsec in colvar_xml:
+                subsec_name=subsec.get('name')
+                if subsec.tag=='colvar_type':
+                    #CV name
+                    CV_Names.append(subsec_name)
+                    #CV expression
+                    for expr in subsec.iter('expression'):
+                        expr_string=expr.attrib['expr']
+                        if 'num' in expr.attrib:
+                            if '|' in expr_string:
+                                SBM.opensmog_quit('Expression for collective variable cannot contain '|' if number of interacting particles if specified as an attribute.')  
+                            expr_string='%s|%s'%(expr.attrib['num'],expr_string)
+                        CV_Expression.append(expr_string)
+                    #internal parameters
+                    internal_Param=[]
+                    for par in subsec.iter('parameter'):
+                        internal_Param.append(par.text)
+                    CV_Parameters.append(internal_Param)
+                    # Party
+                    internal_party=[]
+                    for atomparty in subsec.iter('interaction'):
+                        internal_party.append(atomparty.attrib)
+                    Party.append(internal_party)
+                if subsec.tag=='bias_type':
+                    Force_Names.append(subsec_name)
+                    #Force name
+                    #CV expression
+                    for expr in subsec.iter('expression'):
+                        Expression.append(expr.attrib['expr'])
+                    #internal parameters
+                    internal_Param=[]
+                    for par in subsec.iter('parameter'):
+                        internal_Param.append(par.text)
+                    Parameters.append(internal_Param)
+                    # Values
+                    internal_value=[]
+                    for atomparty in subsec.iter('interaction'):
+                        internal_value.append(atomparty.attrib)
+                    Values.append(internal_value)
+            xml_data['colvar']=[CV_Expression,CV_Parameters,Party,CV_Names],[Expression,Parameters,Values,Force_Names]
+        else: print('No collective variable potential found in xml file.')        
+
 
         self.mod_data=xml_data
         
@@ -295,6 +424,12 @@ class SBM(SBM):
                 for force in self.manyparticle:
                     print('\tAugmenting many particle force {:} from OpenSMOGmd'.format(force))
                     self._customManyParticleForce(force, self.manyparticle[force], self.pbc)
+                    self.system.addForce(self.forcesDict[force])
+            if self.colvar_present==True:
+                self._splitForces_colvar()
+                for force in self.cvforce:
+                    print('\tAugmenting collective variable force {:} from OpenSMOGmd'.format(force))
+                    self._customColVarForce(force, self.cvforce[force], self.pbc)
                     self.system.addForce(self.forcesDict[force])
             if self.com_pull_present==True:   
                 self._splitForces_COM_pull()

@@ -46,6 +46,36 @@
       <xs:element name="manyparticle_type" type="manyparticlepotType" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
+  <!-- COLLECTIVE VARIALBE POTENTIAL TYPE -->
+  <xs:complexType name="colvarswitchType">
+    <xs:sequence>
+      <xs:element name="expression" type="expressionType" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="parameter" type="parameterType" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="interaction" type="interactionType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="colvarpotType">
+    <xs:sequence>
+      <xs:element name="expression" type="expressionType" minOccurs="1" maxOccurs="unbounded"/>
+      <!--xs:element name="parameter" type="parameterType" minOccurs="1" maxOccurs="unbounded"/-->
+      <!--xs:element name="target" type="novalType" maxOccurs="unbounded"/-->
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <!-- MANYPARTICLE TYPE -->
+  <xs:complexType name="colvarType">
+    <xs:sequence>
+      <xs:element name="colvar_type" type="colvarswitchType" maxOccurs="unbounded"/>
+      <xs:element name="bias_type" type="colvarpotType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- NOVALUE TYPE -->
+  <xs:complexType name="novalType">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="index" type="xs:integer" use="required"/>
+    <xs:anyAttribute processContents="skip"/>
+  </xs:complexType>
   <!-- CONSTANT TYPE -->
   <xs:complexType name="constantType">
     <xs:attribute name="name" type="xs:string" use="required"/>
@@ -93,6 +123,7 @@
       <xs:element name="manyparticle" type="manyparticleType" minOccurs="0" maxOccurs="1"/>
       <xs:element name="com_pull" type="com_pullType" minOccurs="0" maxOccurs="1"/>
       <xs:element name="interaction_group" type="interaction_groupType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="colvar" type="colvarType" minOccurs="0" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
   <!-- OpenSMOGmod SCHEMA -->
